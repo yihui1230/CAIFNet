@@ -1,6 +1,6 @@
 import torch.nn.functional
 from functools import partial
-from ChangeFormerBaseNetworks import *
+from CBaseNetworks import *
 import torch.nn.functional as F
 import bra_legacy
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
