@@ -881,7 +881,7 @@ class DecoderTransformer_v1(nn.Module):
 
         _c=self.SEM(diff_4, _c1)
         p_c = self.make_pred_c(_c)
-        outputs.append(p_c)
+        #outputs.append(p_c)
         # Upsampling x2 (x1/2 scale)
         x = self.convd2x(_c)
         # Residual block
