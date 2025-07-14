@@ -35,10 +35,8 @@ def resize_for_a2net(outputs):
     outputs[4] = F.interpolate(outputs[4], scale_factor=(4, 4), mode='bilinear')
     outputs[4] = torch.tanh(outputs[4])
 
-    outputs[5] = F.interpolate(outputs[5], scale_factor=(4, 4), mode='bilinear')
+    
     outputs[5] = torch.sigmoid(outputs[5])
-
-    outputs[6] = torch.sigmoid(outputs[6])
     return outputs
 def BCEDiceLoss(inputs, targets):
     bce = F.binary_cross_entropy(inputs, targets)
@@ -85,9 +83,9 @@ def val(args, val_loader, model, epoch):
         outputs = model(pre_img_var, post_img_var,0,epoch,args.max_epochs//2)
         outputs=resize_for_a2net(outputs)
 
-        loss = 0.6*BCEDiceLoss(outputs[0], target_var) +  0.6*BCEDiceLoss(outputs[1],target_var) + 0.8* BCEDiceLoss(outputs[2],target_var) + \
-            1.2* BCEDiceLoss(outputs[3], target_var) + 1.2*BCEDiceLoss(outputs[4], e_target_var) + BCEDiceLoss(outputs[5],target_var)+1.2* BCEDiceLoss(outputs[6],target_var)
-        pred = torch.where(outputs[6] > 0.5, torch.ones_like(outputs[6]), torch.zeros_like(outputs[6])).long()
+        loss =0.5* BCEDiceLoss(outputs[0], target_var) + 0.5* BCEDiceLoss(outputs[1],target_var) +0.5*BCEDiceLoss(outputs[2],target_var) + \
+             BCEDiceLoss(outputs[3], target_var) + BCEDiceLoss(outputs[4], e_target_var) + BCEDiceLoss(outputs[5],target_var)
+        pred = torch.where(outputs[5] > 0.5, torch.ones_like(outputs[5]), torch.zeros_like(outputs[5])).long()
 
         # torch.cuda.synchronize()
         time_taken = time.time() - start_time
@@ -150,9 +148,9 @@ def train(args, train_loader, model, optimizer, epoch, max_batches, cur_iter=0, 
 
         outputs = model(pre_img_var, post_img_var,1,epoch,args.max_epochs//2)
         outputs=resize_for_a2net(outputs)
-        loss = 0.6*BCEDiceLoss(outputs[0], target_var) + 0.6* BCEDiceLoss(outputs[1],target_var) + 0.8* BCEDiceLoss(outputs[2],target_var) + \
-            1.2*BCEDiceLoss(outputs[3], target_var) + 1.2*BCEDiceLoss(outputs[4], e_target_var) + BCEDiceLoss(outputs[5],target_var)+1.2* BCEDiceLoss(outputs[6],target_var)
-        pred = torch.where(outputs[6] > 0.5, torch.ones_like(outputs[6]), torch.zeros_like(outputs[6])).long()
+       loss =0.5* BCEDiceLoss(outputs[0], target_var) + 0.5* BCEDiceLoss(outputs[1],target_var) +0.5*BCEDiceLoss(outputs[2],target_var) + \
+             BCEDiceLoss(outputs[3], target_var) + BCEDiceLoss(outputs[4], e_target_var) + BCEDiceLoss(outputs[5],target_var)
+        pred = torch.where(outputs[5] > 0.5, torch.ones_like(outputs[5]), torch.zeros_like(outputs[5])).long()
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
